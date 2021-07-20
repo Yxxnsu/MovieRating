@@ -6,7 +6,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class CommentPage extends StatelessWidget {
   
-  final stateController controller = Get.find();
+  final stateController controller = Get.put(stateController());
   final Movie items = Get.arguments;  
   String? _contents;
   String? _writer;
@@ -47,7 +47,6 @@ class CommentPage extends StatelessWidget {
   }
 
   Widget _buildSubmitButton(){
-    
     final sendIcon = Icon(
       Icons.send,
       color: Colors.white,
