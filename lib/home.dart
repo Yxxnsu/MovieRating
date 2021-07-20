@@ -55,13 +55,14 @@ class HomePage extends StatelessWidget {
             return controller.sortRating();
           case 2:
             return controller.sortDating();
+          case 1: 
+            return controller.sortGrading();
         }
-      
       },
       itemBuilder: (context){
         return[
           PopupMenuItem(value: 0, child: Text('예매율순'),),
-          PopupMenuItem(value: 1, child: Text('큐레이션'),),
+          PopupMenuItem(value: 1, child: Text('등급순'),),
           PopupMenuItem(value: 2, child: Text('최신순'),),
         ];
       },
