@@ -70,16 +70,11 @@ class MovieRepo{
         date: '2018-08-30',
         reservationGrade: 3,
         reservationRate: 55.8,
-        gerne: '액션, 모험, 판타지',
-        
-      ),
+        gerne: '액션, 모험, 판타지',        
+      ),      
     ];
+    
     return movieData;
 
-  }
-
-  List<Comment> loadComment(String movieId){
-
-    return items.where((element) => (element.movieId == movieId)).toList();
   }
 }
