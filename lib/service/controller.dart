@@ -49,6 +49,6 @@ class stateController extends GetxController {
 
   removeComment(Comment value){
     commentList.remove(value);
-    Future.delayed(Duration(milliseconds: 30),(){update();});
+    update();
   }
 }
