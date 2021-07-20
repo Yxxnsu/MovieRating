@@ -3,40 +3,45 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_app/model/movie.dart';
 import 'package:movie_app/model/repository.dart';
+import 'package:movie_app/service/controller.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import 'comment.dart';
 
 class DetailPage extends StatelessWidget {
-  static Movie items = Get.arguments;
-  //List<Comment> comment = MovieRepo().loadComment(Get.arguments.id);
+  final stateController controller = Get.put(stateController());
+  Movie items = Get.arguments;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(items.title),
-        ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildMain(),
-              Divider(
-                thickness: 2,
-              ),
-              _buildStory(),
-              Divider(
-                thickness: 2,
-              ),
-              _buildDetector(),
-              Divider(
-                thickness: 2,
-              ),
-              _buildComment(),
-            ],
+    List<Comment> comment = controller.commentList;
+    return GetBuilder<stateController>(builder: (_) {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(items.title),
           ),
-        ));
+          body: SingleChildScrollView(
+            padding: EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildMain(),
+                Divider(
+                  thickness: 2,
+                ),
+                _buildStory(),
+                Divider(
+                  thickness: 2,
+                ),
+                _buildDetector(),
+                Divider(
+                  thickness: 2,
+                ),
+                _buildComment(comment),
+              ],
+            ),
+          ));
+    });
   }
 
   _buildMain() {
@@ -62,7 +67,7 @@ class DetailPage extends StatelessWidget {
                 Text(items.title,
                     style:
                         TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                Text('${items.date}개봉'),
+                Text('${items.date} 개봉'),
                 Text('${items.gerne} / 130분'),
               ],
             )
@@ -184,7 +189,7 @@ class DetailPage extends StatelessWidget {
     );
   }
 
-  _buildComment() {
+  _buildComment(List<Comment> comment) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -198,9 +203,9 @@ class DetailPage extends StatelessWidget {
             ),
             IconButton(
               iconSize: 20,
-              icon: Icon(Icons.edit),              
+              icon: Icon(Icons.edit),
               onPressed: () {
-                Get.to(() => CommentPage(), arguments: items.id);
+                Get.to(() => CommentPage(), arguments: items);
               },
             ),
           ],
@@ -208,38 +213,83 @@ class DetailPage extends StatelessWidget {
         SizedBox(
           height: 10,
         ),
-        // Column(
-        //   crossAxisAlignment: CrossAxisAlignment.start,
-        //   children: _buildComments(),
-        // ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: _buildComments(comment),
+        ),
       ],
     );
   }
 
-  // List<Padding> _buildComments(){
+  List<Padding> _buildComments(List<Comment> comment) {
+    comment = comment.where((value) => value.movieId == items.id).toList();
 
-  //   return comment.map((value){
-  //     final dateFormatter = DateFormat('yyyy-MM-dd HH:mm:ss');
-  //     dateFormatter.format(
-  //       DateTime.fromMillisecondsSinceEpoch(value.dateTime * 1000)
-  //     );
-  //     return Padding(
-  //       padding: EdgeInsets.all(8),
-  //       child: Row(
-  //         children: [
-  //           Icon(Icons.person_pin,size: 50,),
-  //           SizedBox(width: 10,),
-  //           Column(
-  //             children: [
-  //               Text(value.nickName),
-  //               Text((value.dateTime).toString()),
-  //               SizedBox(height: 10,),
-  //               Text(value.comment),
-  //             ],
-  //           ),
-  //         ],
-  //       ),
-  //     );
-  //   }).toList();
-  // }
+    return comment.map((value) {
+      var dateFormatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+      String date = dateFormatter
+          .format(DateTime.fromMicrosecondsSinceEpoch(value.dateTime * 1000));
+      return Padding(
+        padding: EdgeInsets.all(8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              Icons.person_pin,
+              size: 50,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(value.nickName),
+                      _buildRatingBar(value),
+                    ],
+                  ),
+                  Text((date).toString()),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(value.comment),
+                ],
+              ),
+            ),            
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: (){controller.removeComment(value);}, //Issue
+            ),
+          ],
+        ),
+      );
+    }).toList();
+  }
+
+  _buildRatingBar(Comment comments) {
+    return RatingBar(
+        itemSize: 15,
+        initialRating: comments.rating,
+        direction: Axis.horizontal,
+        allowHalfRating: true,
+        itemCount: 5,
+        itemPadding: EdgeInsets.symmetric(horizontal: 2),
+        ratingWidget: RatingWidget(
+          full: Icon(
+            Icons.star,
+            color: Colors.amber,
+          ),
+          half: Icon(
+            Icons.star_half,
+            color: Colors.amber,
+          ),
+          empty: Icon(
+            Icons.star_border,
+            color: Colors.amber,
+          ),
+        ),
+        onRatingUpdate: (rating) {});
+  }
 }
