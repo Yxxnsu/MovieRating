@@ -1,7 +1,6 @@
 import 'package:uuid/uuid.dart';
 
 class Movie {
-
   final String title;           //영화제목
   final int userRating;         //유저 평점
   final int grade;              //영화등급
@@ -19,7 +18,7 @@ class Movie {
     required this.imagePath,
     required this.date,
     required this.reservationRate,
-    required this.gerne,
+    required this.gerne
   }) : this.id = Uuid().v1();
 }
 
@@ -27,6 +26,7 @@ class Comment {
   final String movieId;
   final String comment;
   final int dateTime;
+  final double rating;
   //DateTime.now().millisecondsSinceEpoch,
   final String nickName;
 
@@ -35,5 +35,6 @@ class Comment {
     required this.comment,
     required this.dateTime,
     required this.nickName,
+    required this.rating,
   });
 }
